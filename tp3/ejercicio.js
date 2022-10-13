@@ -55,15 +55,15 @@ class CurveDrawer
 	updatePoints( pt )
 	{
 	
-		var p = [];
+		/*var p = [];
 		for ( var i=0; i<4; ++i ) 
 		{
 			var x = pt[i].getAttribute("cx");
 			var y = pt[i].getAttribute("cy");
-			
+		
 			p.push(x);
 			p.push(y);
-		}
+		}*/
 		// [Completar] Pueden acceder a las coordenadas de los puntos de control consultando el arreglo pt[]:
 		// [Completar] No se olviden de hacer el binding del programa antes de setear las variables 
 		// [Completar] Actualización de las variables uniformes para los puntos de control
@@ -71,9 +71,20 @@ class CurveDrawer
 		// var x = pt[i].getAttribute("cx");
 		// var y = pt[i].getAttribute("cy");
 
+		var p0 = [pt[0].getAttribute("cx"), pt[0].getAttribute("cy")];
+		var p1 = [pt[1].getAttribute("cx"), pt[1].getAttribute("cy")];
+		var p2 = [pt[2].getAttribute("cx"), pt[2].getAttribute("cy")];
+		var p3 = [pt[3].getAttribute("cx"), pt[3].getAttribute("cy")];
+
+		gl.useProgram(this.prog);
+		gl.uniform2fv(this.p0, p0);
+		gl.uniform2fv(this.p1, p1);
+		gl.uniform2fv(this.p2, p2);
+		gl.uniform2fv(this.p3, p3);
+
 		// Enviamos al buffer
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(p), gl.STATIC_DRAW);
+		//gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+		//gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(p), gl.STATIC_DRAW);
 	}
 
 	draw()
@@ -85,15 +96,12 @@ class CurveDrawer
 		gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
 		
 		// Habilitamos los atributos
-		gl.vertexAttribPointer( this.t, 2, gl.FLOAT, false, 0, 0 );
+		gl.vertexAttribPointer( this.t, 1, gl.FLOAT, false, 0, 0 ); //gl.vertexAttribPointer(attributeLocations.curveness, numComponents, type, normalize, stride, offset);
 		gl.enableVertexAttribArray( this.t );
-
-		gl.vertexAttribPointer( this.p, 2, gl.FLOAT, false, 0, 0 );
-		gl.enableVertexAttribArray( this.p );
 
 		// Dibujamos lineas utilizando primitivas gl.LINE_STRIP 
 		// https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/drawArrays
-		gl.drawArrays( gl.LINE_STRIP, 0, 4 );
+		gl.drawArrays( gl.LINE_STRIP, 0, 100 );
 		
 		
 		// [Completar] No se olviden de hacer el binding del programa y de habilitar los atributos de los vértices
@@ -107,7 +115,7 @@ class CurveDrawer
 // declarás las variables pero no las usás, no se les asigna espacio. Siempre poner ; al finalizar las sentencias. Las constantes
 // en punto flotante necesitan ser expresadas como X.Y, incluso si son enteros: ejemplo, para 4 escribimos 4.0
 var curvesVS = `
-	attribute float t;
+	attribute float tv;
 
 	uniform mat4 mvp;
 	
@@ -116,18 +124,10 @@ var curvesVS = `
 	uniform vec2 p2;
 	uniform vec2 p3;
 
-	//uniform vec2 pos;
-	float x;
-	float y;
-
 	void main()
 	{ 
 		//[completar]
-		//pos = p0 * pow(1.0-t,3.0) + p1 * (3.0*t) * pow(1.0-t,2.0) + p2 * 3.0 * pow(t,2.0) * (1.0-t) + p3 * pow(t,3.0);
-
-		x = p0.x * pow(1.0-t,3.0) + p1.x * (3.0*t) * pow(1.0-t,2.0) + p2.x * 3.0 * pow(t,2.0) * (1.0-t) + p3.x * pow(t,3.0);
-		y = p0.y * pow(1.0-t,3.0) + p1.y * (3.0*t) * pow(1.0-t,2.0) + p2.y * 3.0 * pow(t,2.0) * (1.0-t) + p3.y * pow(t,3.0);
-		gl_Position = mvp * vec4(x, y, 0.0, 1.0);
+		gl_Position = mvp * vec4(p0 * pow(1.0-tv,3.0) + p1 * (3.0*tv) * pow(1.0-tv,2.0) + p2 * 3.0 * pow(tv,2.0) * (1.0-tv) + p3 * pow(tv,3.0), 0, 1);		
 
 	}
 `;
@@ -139,6 +139,6 @@ var curvesFS = `
 	void main()
 	{
 		//[ Salvo que te moleste que se vea azul, no deberías tocarlo :P ]
-		gl_FragColor = vec4(0,0,1,1);
+		gl_FragColor = vec4(1,0,1,1);
 	}
 `;
