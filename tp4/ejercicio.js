@@ -11,8 +11,19 @@ function GetModelViewProjection( projectionMatrix, translationX, translationY, t
 	// [COMPLETAR] Modificar el código para formar la matriz de transformación.
 	var cos = Math.cos;
     var sin = Math.sin;
-  
-    var rotateXMatrix = [1,               0,        		0,     0,
+
+	var rotateXMatrix = [1,               0,        		0,     0,
+						 0,  cos(rotationX),   sin(rotationX),     0,
+						 0,  -sin(rotationX),  cos(rotationX),     0,
+						 0,       		  0,       		    0,     1];
+
+	var rotateYMatrix = [cos(rotationY),   0, -sin(rotationY),    0,
+						  			   0,	1,               0,   0,
+						  sin(rotationY),   0,  cos(rotationY),   0,
+		  							   0,   0,               0,   1];
+
+
+    /*var rotateXMatrix = [1,               0,        		0,     0,
          				 0,  cos(rotationX),  -sin(rotationX),     0,
          				 0,  sin(rotationX),   cos(rotationX),     0,
          				 0,       		  0,       		    0,     1];
@@ -21,6 +32,7 @@ function GetModelViewProjection( projectionMatrix, translationX, translationY, t
             			  	   		   0, 	1,              0,   0,
       					 -sin(rotationY),   0, cos(rotationY),   0,
             				   		   0,   0,              0,   1];
+	*/
 	// Matriz de traslación
 	var trans = [			1, 			  0, 			0, 	0,
 				 			0, 			  1, 			0, 	0,
@@ -28,8 +40,8 @@ function GetModelViewProjection( projectionMatrix, translationX, translationY, t
 				 translationX, translationY, translationZ, 	1];
 
 	// [COMPLETAR]
-	var model_1 = MatrixMult(rotateXMatrix, rotateYMatrix)
-	var model = MatrixMult(model_1, trans)
+	var model_1 = MatrixMult(trans, rotateYMatrix)
+	var model = MatrixMult(model_1, rotateXMatrix)
 
 	var mvp = MatrixMult( projectionMatrix, model );
 

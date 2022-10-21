@@ -63,7 +63,7 @@ class Pyramid {
 			// Cara 4
 			0.0,  0.0,  1.0,
 			0.0, 0.0, -1.0,
-			1.0, 0.0, 0.0,		
+			1.0, 0.0, 0.0,
 		  ];	
 
 
@@ -73,13 +73,23 @@ class Pyramid {
 		this.colorbuffer = gl.createBuffer();
 
 		// [COMPLETAR]  Especificar colores
-		var color = [
-			[0.3,  1.0,  1.0],    // Cara 1: cyan
-			[1.0,  0.0,  0.0],    // Cara 2: Rojo
-			[0.3,  0.3,  1.0],    // Cara 3: Azul
-			[1.0,  1.0,  0.3],    // Cara 4: Amarillo
-		  ];
+		var color = [			
+			 1,  0,  0,
+			 1,  0,  0,
+			 1,  0,  0,
 
+			 1,  1,  0,			 
+			 1,  1,  0,
+			 1,  1,  0,
+
+			 0,  1,  1,
+			 0,  1,  1,
+			 0,  1,  1,
+
+			 1,  0,  1,
+			 1,  0,  1,
+			 1,  0,  1,
+		  ];
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.colorbuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(color), gl.STATIC_DRAW);
@@ -108,7 +118,8 @@ class Pyramid {
 		gl.enableVertexAttribArray( this.color );
 		
 		// 5.  [COMPLETAR] Dibujamos
-		gl.drawElements(gl.TRIANGLE, 12, gl.UNSIGNED_SHORT, 0);
+		gl.drawArrays(gl.TRIANGLES, 0, 12);
+
 	}
 }
 
