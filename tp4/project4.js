@@ -73,8 +73,8 @@ function UpdateProjectionMatrix()
 	// Matriz de perspectiva // [COMPLETAR]
 	perspectiveMatrix = [s / ratio, 	 0,                    0,   	0,
 								 0,      s,                    0,   	0,
-								 0,      0,    (n + f) / (n - f),      -1,
-								 0,      0,  n * f / (n - f) * 2,   	0];		
+								 0,      0,    (n + f) / (f - n),       1,
+								 0,      0,  (n * f) / (f - n) * -2,   	0];		
 		
 }
 

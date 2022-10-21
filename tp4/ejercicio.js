@@ -17,10 +17,10 @@ function GetModelViewProjection( projectionMatrix, translationX, translationY, t
 						 0,  -sin(rotationX),  cos(rotationX),     0,
 						 0,       		  0,       		    0,     1];
 
-	var rotateYMatrix = [cos(rotationY),   0, -sin(rotationY),    0,
-						  			   0,	1,               0,   0,
-						  sin(rotationY),   0,  cos(rotationY),   0,
-		  							   0,   0,               0,   1];
+	var rotateYMatrix = [cos(rotationY),   0, -sin(rotationY),   0,
+						  			  0,   1,               0,   0,
+						 sin(rotationY),   0,  cos(rotationY),   0,
+		  							  0,   0,               0,   1];
 
 
     /*var rotateXMatrix = [1,               0,        		0,     0,
@@ -43,7 +43,7 @@ function GetModelViewProjection( projectionMatrix, translationX, translationY, t
 	var model_1 = MatrixMult(trans, rotateYMatrix)
 	var model = MatrixMult(model_1, rotateXMatrix)
 
-	var mvp = MatrixMult( projectionMatrix, model );
+	var mvp = MatrixMult( projectionMatrix, model);
 
 	return mvp;
 }
