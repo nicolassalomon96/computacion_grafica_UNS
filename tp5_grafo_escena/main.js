@@ -33,32 +33,33 @@ function InitWebGL()
 	gl.clearColor(0.9, 0.9, 0.9, 1);
 	gl.enable(gl.DEPTH_TEST); // habilitar test de profundidad 
 
-	camera = new PerspectiveCamera()
+	camera = new PerspectiveCamera();
 	//camera.look_at(vec3.fromValues(0, -1, 3), vec3.fromValues(0, 0, 0))
-	camera.look_at(vec3.fromValues(0, 15, 0), vec3.fromValues(0, 0, 0))
+	camera.look_at(vec3.fromValues(5, 10, 0), vec3.fromValues(0, 0, 0));
 
 
 	// [COMPLETAR] Armar el grafo de escena con al menos 1 sol, 2 planetas y 1 luna
-	sol = new Node()
-	sol.name = 'sol'
+	sol = new Node();
+	sol.name = 'sol';
+	sol.transform.set_pos(vec3.fromValues(0,0,0));
 
-	planeta_1 = new Node()
-	planeta_1.name = 'planeta_1'
-	planeta_1.parent = sol
-	planeta_1.transform.set_pos(vec3.fromValues(5,5,0))
+	planeta_1 = new Node();
+	planeta_1.name = 'planeta_1';
+	planeta_1.parent = sol;
+	planeta_1.transform.set_pos(vec3.fromValues(1.0,1.0,0));
 
-	planeta_2 = new Node()
-	planeta_2.name = 'planeta_2'
-	planeta_2.parent = sol
-	planeta_2.transform.set_pos(vec3.fromValues(10,10,0))
+	planeta_2 = new Node();
+	planeta_2.name = 'planeta_2';
+	planeta_2.parent = sol;
+	planeta_2.transform.set_pos(vec3.fromValues(3.0,3.0,0));
 
-	luna = new Node()
-	luna.name = 'luna'
-	luna.parent = planeta_1
-	luna.transform.set_pos(vec3.fromValues(8,8,0))
+	luna = new Node();
+	luna.name = 'luna';
+	luna.parent = planeta_1;
+	luna.transform.set_pos(vec3.fromValues(1.5,1.5,0));
 	
 	//console.log(luna.parent)
-	DrawScene()
+	DrawScene();
 
 	// Setear el tamaño del viewport
 	UpdateCanvasSize();
@@ -84,6 +85,22 @@ function update_graph(node) {
 			}
 		}
 		return C;
+	}
+
+	if (node.name == 'sol'){
+		sol.world_mat = sol.transform;	
+	}
+
+	else if (node.name == 'planeta_1'){
+		planeta_1.world_mat = MatrixMult(sol.transform, planeta_1.transform);
+	}
+
+	else if (node.name == 'luna'){
+		luna.world_mat = MatrixMult(planeta_1.world_mat, luna.transform);
+	}
+
+	else if (node.name == 'planeta_2'){
+		planeta_2.world_mat = MatrixMult(sol.transform, planeta_2.transform);
 	}
 
 }
