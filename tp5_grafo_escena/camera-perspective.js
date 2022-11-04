@@ -109,7 +109,7 @@ class PerspectiveCamera {
     }
 
     update_matrices() {
-        this.proj_mat = mat4.perspective(mat4.create(), this.fov, 1.0, 0.1, 15)
+        this.proj_mat = mat4.perspective(mat4.create(), this.fov, 1.0, 0.1, 100)
         this.view_mat = mat4.lookAt(mat4.create(), this.view_pos, vec3.add(vec3.create(), this.view_pos, this.look_direction()), vec3.fromValues(0, 1, 0))
         // this.view_mat = mat4.lookAt(mat4.create(), this.view_pos, this.target, vec3.fromValues(0, 1, 0))
     }

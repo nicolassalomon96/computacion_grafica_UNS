@@ -35,7 +35,7 @@ function InitWebGL()
 
 	camera = new PerspectiveCamera();
 	//camera.look_at(vec3.fromValues(0, -1, 3), vec3.fromValues(0, 0, 0))
-	camera.look_at(vec3.fromValues(5, 10, 0), vec3.fromValues(0, 0, 0));
+	camera.look_at(vec3.fromValues(20, 20, 0), vec3.fromValues(0, 0, 0));
 
 
 	// [COMPLETAR] Armar el grafo de escena con al menos 1 sol, 2 planetas y 1 luna
@@ -46,17 +46,17 @@ function InitWebGL()
 	planeta_1 = new Node();
 	planeta_1.name = 'planeta_1';
 	planeta_1.parent = sol;
-	planeta_1.transform.set_pos(vec3.fromValues(1.0,1.0,0));
+	planeta_1.transform.set_pos(vec3.fromValues(5,0,0));
 
 	planeta_2 = new Node();
 	planeta_2.name = 'planeta_2';
 	planeta_2.parent = sol;
-	planeta_2.transform.set_pos(vec3.fromValues(3.0,3.0,0));
+	planeta_2.transform.set_pos(vec3.fromValues(10,0,0));
 
 	luna = new Node();
 	luna.name = 'luna';
 	luna.parent = planeta_1;
-	luna.transform.set_pos(vec3.fromValues(1.5,1.5,0));
+	luna.transform.set_pos(vec3.fromValues(1.5,0,0));
 	
 	//console.log(luna.parent)
 	DrawScene();
@@ -88,19 +88,19 @@ function update_graph(node) {
 	}
 
 	if (node.name == 'sol'){
-		sol.world_mat = sol.transform;	
+		sol.world_mat = sol.transform.get_model_mat();	
 	}
 
 	else if (node.name == 'planeta_1'){
-		planeta_1.world_mat = MatrixMult(sol.transform, planeta_1.transform);
+		planeta_1.world_mat = MatrixMult(sol.transform.get_model_mat(), planeta_1.transform.get_model_mat());
 	}
 
 	else if (node.name == 'luna'){
-		luna.world_mat = MatrixMult(planeta_1.world_mat, luna.transform);
+		luna.world_mat = MatrixMult(MatrixMult(sol.transform.get_model_mat(), planeta_1.transform.get_model_mat()), luna.transform.get_model_mat());
 	}
 
 	else if (node.name == 'planeta_2'){
-		planeta_2.world_mat = MatrixMult(sol.transform, planeta_2.transform);
+		planeta_2.world_mat = MatrixMult(sol.transform.get_model_mat(), planeta_2.transform.get_model_mat());
 	}
 
 }
@@ -109,7 +109,10 @@ function draw_graph(node) {
 
 	// [COMPLETAR] Implementar el recorrido para dibujar todas las entidades
 	pyramid = new Pyramid();
-	pyramid.model = node.transform.get_model_mat();
+	pyramid.model = node.world_mat //transform.get_model_mat();
+	//console.log(node.transform.get_model_mat());
+	//console.log(node.world_mat)
+
 	//Dibujar las piramides
 	pyramid.draw(camera); //Que objeto tipo camara pasarle???!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 	
@@ -173,6 +176,16 @@ window.onload = function() {
 	{
 		t += 0.02;
 		
+		sol.transform.set_rotation([0,5*t,0])
+		//sol.transform.set_pos([t,t,t]);
+
+		//luna.transform.set_rotation([0,5*t,0])
+		//luna.transform.set_pos([t,t,t]);
+
+		planeta_1.transform.set_rotation([0,5*t,0])
+		//sol.transform.set_pos([t,t,t]);
+
+
 		// [COMPLETAR] actulizar la rotación de los astros...
 		
 		DrawScene();
