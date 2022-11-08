@@ -1,4 +1,3 @@
-
 // Traigo al "namespace" global las declaraciones de la lib glMatrix
 m4_mult = glMatrix.mat4.multiply
 mat4 = glMatrix.mat4
@@ -37,9 +36,13 @@ function InitWebGL()
 
 	camera = new PerspectiveCamera()
 	// camera.look_at(vec3.fromValues(0, -1, 3), vec3.fromValues(0, 0, 0))
-	camera.look_at(vec3.fromValues(2, 0, 0), vec3.fromValues(0, 0, 0))
+	camera.look_at(vec3.fromValues(2, 1, 0), vec3.fromValues(0, 0, 0))
 
 	// [COMPLETAR] Instanciar el objeto
+	var puntos = [[0, 0.5, 0, 1], [0.8, 0.5, 0, 1], [0.2, 0, 0, 1], [0.8, -0.5, 0, 1], [0, -0.5, 0, 1]];
+	//var puntos = [[0.8, 0.5, 0, 1], [0.2, 0, 0, 1], [0.8, -0.5, 0, 1]];
+
+	this.obj = new SolidRev(100, puntos);
 		
 	DrawScene()
 
@@ -62,7 +65,11 @@ function DrawScene()
 
 	// [COMPLETAR] Invocar a la actulización y dibujado del grafo
 	
+	//Actualización del grafo
+	this.obj.update();
 
+	//Dibujar el solido
+	this.obj.draw(camera);
 	
 }
 
