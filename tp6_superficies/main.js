@@ -39,10 +39,11 @@ function InitWebGL()
 	camera.look_at(vec3.fromValues(2, 1, 0), vec3.fromValues(0, 0, 0))
 
 	// [COMPLETAR] Instanciar el objeto
-	var puntos = [[0, 0.5, 0, 1], [0.8, 0.5, 0, 1], [0.2, 0, 0, 1], [0.8, -0.5, 0, 1], [0, -0.5, 0, 1]];
+	//var puntos = [[0, 0.5, 0, 1], [0.8, 0.5, 0, 1], [0.2, 0, 0, 1], [0.8, -0.5, 0, 1], [0, -0.5, 0, 1]];
 	//var puntos = [[0.8, 0.5, 0, 1], [0.2, 0, 0, 1], [0.8, -0.5, 0, 1]];
+	var puntos = [[0, 0.5, 0, 1], [0.3, 0, 0, 1], [0, -0.5, 0 , 1]];
 
-	this.obj = new SolidRev(100, puntos);
+	this.obj = new SolidRev(20, puntos);
 		
 	DrawScene()
 
@@ -66,7 +67,7 @@ function DrawScene()
 	// [COMPLETAR] Invocar a la actulización y dibujado del grafo
 	
 	//Actualización del grafo
-	this.obj.update();
+	//this.obj.update();
 
 	//Dibujar el solido
 	this.obj.draw(camera);
