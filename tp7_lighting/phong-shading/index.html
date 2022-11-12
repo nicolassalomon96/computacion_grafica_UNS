@@ -1,7 +1,7 @@
 <doctype html>
 <html>
 <head>
-<title> FCG 2021 - TP5</title>
+<title> FCG 2021 - TP7 - Phong Shading</title>
 
 <!-- estilo-->
 <link href="style.css" rel="stylesheet">
@@ -26,7 +26,7 @@
             <div class="control"><input id="swap-yz" name="swap-yz" type="checkbox" onchange="SwapYZ(this)" /><label for="swap-yz"> Intercambiar Y-Z</label></div>
             <div class="control"><input id="auto-rotate" name="auto-rotate" type="checkbox" onchange="AutoRotate(this)"/><label for="auto-rotate"> Calesita</label></div>
             <div class="control"><input id="rotation-speed" type="range" min="1" max="100" value="50" disabled/></div>
-            <div class="control"><span id="shininess-label">Intensidad:</span><span id="shininess-value">1</span><input id="shininess-exp" type="range" min="0" max="200" value="50" oninput="SetShininess(this)"/></div>
+            <div class="control"><span id="shininess-label">Intensidad:</span><span id="shininess-value">1</span><input id="shininess-exp" type="range" min="0" max="150" value="50" oninput="SetShininess(this)"/></div>
         </div>
         <div class="control-group">
             <div class="control">Modelo:<br/><input id="obj" type="file" onchange="LoadObj(this)" accept=".obj"/></div>

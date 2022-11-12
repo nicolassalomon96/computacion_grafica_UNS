@@ -228,7 +228,7 @@ var meshFS = `
 		vec3 obj_color = vec3(0.4, 0, 1.0);
 		vec3 ka = vec3(0.1, 0.1, 0.1);
 
-		vec3 surface_color = obj_color  * vec3( max(dot(L, N), 0.0) ) + vec3( pow( max(0.0, dot(R, V)), shininess)) + ka * light_color;
+		vec3 surface_color = obj_color  * vec3( max(dot(L, N), 0.0) ) + vec3( pow( max(0.0, dot(R, V)), shininess)) + ka * light_color; // Modelo de intensidad de Phong
 
 		gl_FragColor = vec4( surface_color, 1 );
 	}

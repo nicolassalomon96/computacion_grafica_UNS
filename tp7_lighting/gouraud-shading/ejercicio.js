@@ -197,19 +197,36 @@ var meshVS = `
 	uniform mat4 mvp;
 	uniform mat4 mv;
 
+	uniform vec3 light_dir;
+	uniform float shininess;
+
+	varying vec3 surface_color;
+
 
 	void main()
 	{ 
 		gl_Position = mvp * vec4(pos,1);
+
+		vec3 N = normalize((mv * vec4(normal, 0.0)).xyz);
+		vec3 L = normalize(light_dir);
+		vec3 R = normalize(reflect(-L, N));
+		vec3 V = normalize(-(mv * vec4(pos, 1.0)).xyz);
+
+		vec3 light_color = vec3(1, 1, 1);
+		vec3 obj_color = vec3(0.4, 0, 1.0);
+		vec3 ka = vec3(0.1, 0.1, 0.1);
+
+		surface_color = obj_color  * vec3( max(dot(L, N), 0.0) ) + vec3( pow( max(0.0, dot(R, V)), shininess)) + ka * light_color; // Modelo de intensidad de Phong
 	}
 `;
 
 var meshFS = `
 	precision mediump float;
 
+	varying vec3 surface_color;
+
 	void main()
 	{		
-		
 		gl_FragColor = vec4( surface_color, 1 );
 	}
 `;
