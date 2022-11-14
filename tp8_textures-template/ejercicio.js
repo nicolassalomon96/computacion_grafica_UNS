@@ -188,6 +188,7 @@ class MeshDrawer
 		// [COMPLETAR] Ahora que la textura ya está seteada, debemos setear 
 		// parámetros uniformes en el fragment shader para que pueda usarla.
 		this.sampler_tex_loc = gl.getUniformLocation( this.prog, 'sampler_tex');
+		gl.useProgram(this.prog)
 		gl.uniform1i ( this.sampler_tex_loc, 0 );
 	}
 		
