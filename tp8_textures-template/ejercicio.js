@@ -88,18 +88,21 @@ class MeshDrawer
 		this.mv_loc = gl.getUniformLocation( this.prog, 'mv' );
 		this.light_dir = gl.getUniformLocation(this.prog, "light_dir")
 		this.shininess = gl.getUniformLocation(this.prog, "shininess");
-
+		this.show = gl.getUniformLocation(this.prog, "show"); //?????????????????????????????????????????????????
+		
 		// 3. Obtenemos los IDs de los atributos de los vértices en los shaders
 		this.pos_loc = gl.getAttribLocation( this.prog, 'pos' );
 		this.normal_loc = gl.getAttribLocation( this.prog, 'normal' );
 
+		this.tx_loc = gl.getAttribLocation(this.prog, "tx");
 
 		// 4. Creamos los buffers
 		this.pos_buffer = gl.createBuffer();
 		this.normal_buffer = gl.createBuffer();
 
 		// [COMPLETAR] Crear buffer y textura
-
+		this.texCoords_buffer = gl.createBuffer(); // Buffer de coordenadas de la textura
+		this.textura = gl.createTexture(); // Textura
 	}
 	
 	// Esta función se llama cada vez que el usuario carga un nuevo
@@ -115,7 +118,7 @@ class MeshDrawer
 	setMesh( vertPos, texCoords, normals )
 	{
 		this.numTriangles = vertPos.length / 3 / 3;
-		console.log(this.numTriangles)
+		console.log(this.numTriangles);
 
 		// 1. Binding y seteo del buffer de posiciones
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.pos_buffer);
@@ -125,9 +128,9 @@ class MeshDrawer
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.normal_buffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
 	
-
 		// [COMPLETAR] Binding y seteo del buffer de coordenadas UV
-
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoords_buffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords), gl.STATIC_DRAW);
 	}
 	
 	
@@ -136,10 +139,9 @@ class MeshDrawer
 	// la matriz model-view (matrixMV) que es retornada por 
 	// GetModelViewProjection 
 	draw( matrixMVP, matrixMV )
-	{
-		
+	{	
 		// 1. Seleccionamos el shader
-		gl.useProgram(this.prog)
+		gl.useProgram(this.prog);
 	
 		// 2. Setear uniformes con las matrices de transformaciones
 		gl.uniformMatrix4fv( this.mvp_loc, false, matrixMVP );
@@ -147,21 +149,21 @@ class MeshDrawer
 
    		// 3. Habilitar atributos: vértices, normales, texturas
 		gl.bindBuffer( gl.ARRAY_BUFFER, this.pos_buffer );
-
 		gl.vertexAttribPointer( this.pos_loc, 3, gl.FLOAT, false, 0, 0 );
 		gl.enableVertexAttribArray( this.pos_loc );
 
-		// 4 Binding del buffer de color
 		gl.bindBuffer( gl.ARRAY_BUFFER, this.normal_buffer );
-		
 		gl.vertexAttribPointer( this.normal_loc, 3, gl.FLOAT, false, 0, 0 );
 		gl.enableVertexAttribArray( this.normal_loc );
 
 		// [COMPLETAR] Binding y activación del atributo del buffer de UVs
+		gl.bindBuffer( gl.ARRAY_BUFFER, this.texCoords_buffer);
+		gl.vertexAttribPointer( this.tx_loc, 2, gl.FLOAT, false, 0, 0 );
+		gl.enableVertexAttribArray( this.tx_loc );
 
 		// [COMPLETAR] Activación de la Texture Unit
-
-
+		gl.activeTexture( gl.TEXTURE0 );
+		
 		gl.drawArrays( gl.TRIANGLES, 0, this.numTriangles * 3 );
 	}
 	
@@ -170,10 +172,11 @@ class MeshDrawer
 	setTexture( img )
 	{
 		// [COMPLETAR] Binding de la textura
+		gl.bindTexture( gl.TEXTURE_2D, this.textura );
 
 		// Pueden setear la textura utilizando esta función:
 		gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img );
-		gl.generateMipmap(gl.TEXTURE_2D)
+		gl.generateMipmap(gl.TEXTURE_2D);
 
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -183,10 +186,12 @@ class MeshDrawer
   
 
 		// [COMPLETAR] Ahora que la textura ya está seteada, debemos setear 
-		// parámetros uniformes en el fragment shader para que pueda usarla. 
+		// parámetros uniformes en el fragment shader para que pueda usarla.
+		this.sampler_tex_loc = gl.getUniformLocation( this.prog, 'sampler_tex');
+		gl.uniform1i ( this.sampler_tex_loc, 0 );
 	}
 		
-        // Esta función se llama cada vez que el usuario cambia el estado del checkbox 'Mostrar textura'
+    // Esta función se llama cada vez que el usuario cambia el estado del checkbox 'Mostrar textura'
 	// El argumento es un boleano que indica si el checkbox está tildado
 	showTexture( show )
 	{
@@ -226,17 +231,20 @@ class MeshDrawer
 var meshVS = `
 	attribute vec3 pos;
 	attribute vec3 normal;
+	attribute vec2 tx;
 
 	uniform mat4 mvp;
 	uniform mat4 mv;
 
 	varying vec3 normal2fs_eye;
 	varying vec3 pos2fs_eye;
+	varying vec2 texCoords;
 
 	void main()
 	{ 
 		normal2fs_eye = (mv * vec4(normal, 0.0)).xyz;
 		pos2fs_eye = (mv * vec4(pos, 1.0)).xyz;
+		texCoords = tx;
 
 		gl_Position = mvp * vec4(pos,1);
 	}
@@ -253,9 +261,13 @@ var meshFS = `
 
 	uniform vec3 light_dir;
 	uniform float shininess;
+	uniform bool show;
 
 	varying vec3 normal2fs_eye;
 	varying vec3 pos2fs_eye;
+
+	uniform sampler2D sampler_tex;
+	varying vec2 texCoords;
 
 	void main()
 	{		
@@ -265,9 +277,18 @@ var meshFS = `
 		vec3 V = normalize(-pos2fs_eye);
 
 		vec3 light_color = vec3(1, 1, 1);
-		vec3 obj_color = vec3(0.4, 0, 1.0);
 
-		vec3 surface_color = obj_color  * vec3( max(dot(L, N), 0.0) ) + vec3( pow( max(0.0, dot(R, V)), shininess));
+		//if (show == True){
+		//	vec3 obj_color = vec3(texture2D( sampler_tex, texCoords));
+		//}
+		//else{
+		//	vec3 obj_color = vec3(0.4, 0.0, 1.0);
+		//}
+
+		//vec3 obj_color = vec3(0.4, 0.0, 1.0);
+		vec3 obj_color = vec3(texture2D( sampler_tex, texCoords));
+		
+		vec3 surface_color = obj_color * vec3( max(dot(L, N), 0.0) ) + vec3( pow( max(0.0, dot(R, V)), shininess));
 
 		gl_FragColor = vec4( surface_color, 1 );
 	}
