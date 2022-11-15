@@ -79,7 +79,6 @@ class MeshDrawer
 	// El constructor es donde nos encargamos de realizar las inicializaciones necesarias. 
 	constructor()
 	{
-
 		// 1. Compilamos el programa de shaders
 		this.prog = InitShaderProgram( meshVS, meshFS );
 		
@@ -88,7 +87,7 @@ class MeshDrawer
 		this.mv_loc = gl.getUniformLocation( this.prog, 'mv' );
 		this.light_dir = gl.getUniformLocation(this.prog, "light_dir")
 		this.shininess = gl.getUniformLocation(this.prog, "shininess");
-		this.show = gl.getUniformLocation(this.prog, "show"); //?????????????????????????????????????????????????
+		this.show = gl.getUniformLocation(this.prog, "show");
 		
 		// 3. Obtenemos los IDs de los atributos de los vértices en los shaders
 		this.pos_loc = gl.getAttribLocation( this.prog, 'pos' );
@@ -103,6 +102,8 @@ class MeshDrawer
 		// [COMPLETAR] Crear buffer y textura
 		this.texCoords_buffer = gl.createBuffer(); // Buffer de coordenadas de la textura
 		this.textura = gl.createTexture(); // Textura
+
+		this.showTexture(0); //Seteo de show en un valor por defecto para evitar errores
 	}
 	
 	// Esta función se llama cada vez que el usuario carga un nuevo
@@ -181,8 +182,8 @@ class MeshDrawer
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
   
 
 		// [COMPLETAR] Ahora que la textura ya está seteada, debemos setear 
@@ -197,6 +198,8 @@ class MeshDrawer
 	showTexture( show )
 	{
 		// [COMPLETAR] Setear variables uniformes en el fragment shader para indicar si debe o no usar la textura
+		gl.useProgram(this.prog);
+		gl.uniform1i(this.show, show);
 	}
 	
 	// Este método se llama al actualizar la dirección de la luz desde la interfaz
@@ -278,17 +281,8 @@ var meshFS = `
 		vec3 V = normalize(-pos2fs_eye);
 
 		vec3 light_color = vec3(1, 1, 1);
-
-		//if (show == True){
-		//	vec3 obj_color = vec3(texture2D( sampler_tex, texCoords));
-		//}
-		//else{
-		//	vec3 obj_color = vec3(0.4, 0.0, 1.0);
-		//}
-
-		//vec3 obj_color = vec3(0.4, 0.0, 1.0);
-		vec3 obj_color = vec3(texture2D( sampler_tex, texCoords));
-		
+		vec3 obj_color = (show) ? vec3(texture2D( sampler_tex, texCoords)) : vec3(0.4, 0.0, 1.0);	
+	
 		vec3 surface_color = obj_color * vec3( max(dot(L, N), 0.0) ) + vec3( pow( max(0.0, dot(R, V)), shininess));
 
 		gl_FragColor = vec4( surface_color, 1 );
