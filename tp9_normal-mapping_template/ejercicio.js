@@ -241,12 +241,11 @@ class MeshDrawer
 		gl.enableVertexAttribArray(this.tangent_loc);
 
 		// 6 [COMPLETAR] Habilitar las 2 texturas y bindear las texturas correspondientes
-		gl.bindTexture(gl.TEXTURE_2D, this.textura)
 		gl.activeTexture( gl.TEXTURE0 );
+		gl.bindTexture(gl.TEXTURE_2D, this.textura)
 
-		gl.bindTexture(gl.TEXTURE_2D, this.normal_map)
 		gl.activeTexture( gl.TEXTURE1 );
-		
+		gl.bindTexture(gl.TEXTURE_2D, this.normal_map)	
 
 		gl.drawArrays( gl.TRIANGLES, 0, this.numTriangles * 3 );
 	}
