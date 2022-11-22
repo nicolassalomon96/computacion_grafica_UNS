@@ -392,16 +392,16 @@ var meshFS = `
 
 		// [COMPLETAR] transformar normal de textura
 
-		vec3 L = normalize(light_dir);
-		vec3 R = normalize(reflect(-L, N));
-		vec3 V = normalize(-pos2fs_eye);
-
 		vec3 light_color = vec3(1, 1, 1);
 
 		vec3 obj_color = with_tex ? texture2D(tex_sampler, tex_coord2fs).rgb : vec3(0.8, 0.4, 0.9);
 		//vec3 obj_color = vec3(0.8, 0.4, 0.9);
 
 		vec3 N_nueva = TBN * ((texture2D(normal_tex_sampler, tex_coord2fs).rgb) * vec3(2.0,2.0,2.0) - vec3(1.0,1.0,1.0));
+
+		vec3 L = normalize(light_dir);
+		vec3 R = normalize(reflect(-L, N_nueva));
+		vec3 V = normalize(-pos2fs_eye);
 		
 		vec3 surface_color = obj_color  * vec3( max(dot(L, N_nueva), 0.0) ) + vec3( pow( max(0.0, dot(R, V)), shininess));
 
